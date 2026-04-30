@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo Master</title>
+    <link rel="stylesheet" href="frontend/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>📚 Estudo Master</h1>
+        <p>Organize todas as suas matérias em um só lugar</p>
+    </header>
+
+    <main class="container">
+        <section class="add-section">
+            <h2>Adicionar Novo Estudo</h2>
+            <form id="form-materia">
+                <input type="text" id="input-nome" placeholder="Nome da Matéria (ex: Física)" required>
+                <input type="text" id="input-tema" placeholder="Tema (ex: Leis de Newton)" required>
+                <select id="input-status">
+                    <option value="Pendente">Pendente</option>
+                    <option value="Estudando">Estudando</option>
+                    <option value="Concluído">Concluído</option>
+                </select>
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+
+        <section id="grid-materias" class="grid">
+        </section>
+    </main>
+
+    <script src="frontend/app.js"></script>
+</body>
+</html>
