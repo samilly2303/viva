@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo Master</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>📚 Estudo Master</h1>
+        <p>Organize todas as suas matérias em um só lugar</p>
+    </header>
+
+    <main class="container">
+        <section class="add-section">
+            <h2>Adicionar Novo Estudo</h2>
+            <form id="form-materia">
+                <input type="text" id="input-nome" placeholder="Nome da Matéria (ex: Física)" required>
+                <input type="text" id="input-tema" placeholder="Tema (ex: Leis de Newton)" required>
+                <select id="input-status">
+                    <option value="Pendente">Pendente</option>
+                    <option value="Estudando">Estudando</option>
+                    <option value="Concluído">Concluído</option>
+                </select>
+                <button type="submit">Salvar</button>
+            </form>
+        </section>
+
+        <section class="ia-section">
+            <div class="ia-box">
+                <h3>💡 Dúvida com a matéria?</h3>
+                <p>Clique no botão de ajuda nos cards abaixo ou use o tutor geral:</p>
+                <div class="ia-input-group">
+                    <input type="text" id="input-ia" placeholder="Digite sua dúvida...">
+                    <button class="btn-ajuda" onclick="perguntarIAInput()">Perguntar</button>
+                </div>
+                <div id="resposta-ia" class="explicacao-texto">
+                    </div>
+            </div>
+        </section>
+
+        <section id="grid-materias" class="grid">
+            </section>
+    </main>
+</body>
+
+<script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+    
+    const gridMaterias = document.getElementById('grid-materias');
+    const formMateria = document.getElementById('form-materia');
+    const statusDivIA = document.getElementById('resposta-ia');
+
+    function perguntarIAInput() {
+        const texto = document.getElementById('input-ia').value;
+
+        if (!texto) return;
+
+        pedirAjudaIA('Geral', texto);
+    }
+    
+    async function carregarMaterias() {
+        try {
+            const resposta = await fetch(`${API_BASE_URL}/materias`);
+            const materias = await resposta.json();
+            renderizarGrid(materias);
+        } catch {
+            gridMaterias.innerHTML = `<p>Erro ao carregar matérias</p>`;
+        }
+    }
+    
+    async function pedirAjudaIA(materia, tema) {
+        statusDivIA.innerText = "IA pensando...";
+    
+        try {
+            const resposta = await fetch(`${API_BASE_URL}/ajuda-ia`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ materia, tema })
+            });
+    
+            const resultado = await resposta.json();
+            statusDivIA.innerText = resultado.explicacao || resultado.erro;
+        } catch {
+            statusDivIA.innerText = "Erro ao contatar IA";
+        }
+    }
+    
+    async function deletarMateria(id) {
+        await fetch(`${API_BASE_URL}/materias/${id}`, {
+            method: 'DELETE'
+        });
+        carregarMaterias();
+    }
+    
+    function renderizarGrid(materias) {
+        gridMaterias.innerHTML = '';
+    
+        materias.forEach(materia => {
+            const card = document.createElement('div');
+            card.className = 'card';
+    
+            const statusClass = materia.status.replace(/\s+/g, '').toLowerCase();
+    
+            card.innerHTML = `
+                <h3>${materia.nome}</h3>
+                <p><strong>Tema:</strong> ${materia.tema}</p>
+                <span>${materia.status}</span>
+                <button onclick="pedirAjudaIA('${materia.nome}', '${materia.tema}')">IA</button>
+                <button onclick="deletarMateria(${materia.id})">Excluir</button>
+            `;
+    
+            gridMaterias.appendChild(card);
+        });
+    }
+    
+    formMateria.addEventListener('submit', async (e) => {
+        e.preventDefault();
+    
+        const novaMateria = {
+            nome: document.getElementById('input-nome').value,
+            tema: document.getElementById('input-tema').value,
+            status: document.getElementById('input-status').value
+        };
+    
+        await fetch(`${API_BASE_URL}/materias`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaMateria)
+        });
+    
+        formMateria.reset();
+        carregarMaterias();
+    });
+    
+    carregarMaterias();
+    </script>
+
+</html>
