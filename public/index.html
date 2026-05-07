@@ -47,9 +47,7 @@
     </main>
 </body>
 
-<script>
-    const API_BASE_URL = 'http://localhost:3000/api';
-    
+<script>    
     const gridMaterias = document.getElementById('grid-materias');
     const formMateria = document.getElementById('form-materia');
     const statusDivIA = document.getElementById('resposta-ia');
@@ -64,7 +62,7 @@
     
     async function carregarMaterias() {
         try {
-            const resposta = await fetch(`${API_BASE_URL}/materias`);
+            const resposta = fetch('/api/materias')
             const materias = await resposta.json();
             renderizarGrid(materias);
         } catch {
@@ -76,7 +74,7 @@
         statusDivIA.innerText = "IA pensando...";
     
         try {
-            const resposta = await fetch(`${API_BASE_URL}/ajuda-ia`, {
+            const resposta = await fetch('/api/ajuda-ia', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ materia, tema })
@@ -90,7 +88,7 @@
     }
     
     async function deletarMateria(id) {
-        await fetch(`${API_BASE_URL}/materias/${id}`, {
+        await fetch('/api/materias/${id}', {
             method: 'DELETE'
         });
         carregarMaterias();
@@ -126,7 +124,7 @@
             status: document.getElementById('input-status').value
         };
     
-        await fetch(`${API_BASE_URL}/materias`, {
+        await fetch(`api/materias`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(novaMateria)

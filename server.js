@@ -8,6 +8,7 @@ const app = express();
 const PORT = 3000;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const BaseURL = process.env.BASE_URL
 
 app.use(cors());
 app.use(express.json());
